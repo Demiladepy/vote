@@ -1,0 +1,29 @@
+[
+  {
+    "id": "tinubu-2023",
+    "name": "Bola Ahmed Tinubu",
+    "party": "All Progressives Congress (APC)",
+    "position": "President",
+    "year": 2023,
+    "manifesto": "Renewed Hope Agenda — focused on infrastructure, youth empowerment, security reforms, and industrialization.",
+    "summary": "Economic transformation through industrial policy and job creation."
+  },
+  {
+    "id": "atiku-2023",
+    "name": "Atiku Abubakar",
+    "party": "People's Democratic Party (PDP)",
+    "position": "President",
+    "year": 2023,
+    "manifesto": "My Covenant with Nigerians — restructuring, education reform, national unity, and digital economy development.",
+    "summary": "Focuses on restructuring Nigeria and enhancing economic inclusion."
+  },
+  {
+    "id": "peter-obi-2023",
+    "name": "Peter Obi",
+    "party": "Labour Party (LP)",
+    "position": "President",
+    "year": 2023,
+    "manifesto": "Turning Nigeria from consumption to production — emphasizes security, education, and economic productivity.",
+    "summary": "Productivity-focused governance, youth inclusion, and security-driven economic reform."
+  }
+]

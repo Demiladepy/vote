@@ -1,0 +1,30 @@
+[
+  {
+    "country": "Ghana",
+    "election_year": 2024,
+    "electoral_commission": "Electoral Commission of Ghana",
+    "current_president": "Nana Akufo-Addo",
+    "notes": "Next elections scheduled for December 2024."
+  },
+  {
+    "country": "Kenya",
+    "election_year": 2027,
+    "electoral_commission": "IEBC",
+    "current_president": "William Ruto",
+    "notes": "Kenya uses both manual and digital transmission systems for results."
+  },
+  {
+    "country": "Nigeria",
+    "election_year": 2027,
+    "electoral_commission": "INEC",
+    "current_president": "Bola Ahmed Tinubu",
+    "notes": "Next general elections scheduled for February 2027."
+  },
+  {
+    "country": "South Africa",
+    "election_year": 2024,
+    "electoral_commission": "IEC",
+    "current_president": "Cyril Ramaphosa",
+    "notes": "Next general elections scheduled for May 2024."
+  }
+]
