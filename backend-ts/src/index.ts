@@ -3,6 +3,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env, firestore, pineconeIndex } from "./config";
 
+//route imports
+import pineconeRoutes from "./routes/pineconeRoutes";
+
 const app = express();
 
 const allowedOrigins = [
@@ -35,5 +38,8 @@ app.use("/", (req: Request, res: Response) => {
 	res.send("Server is running")
 })
 
-const PORT = process.env.PORT || 5000;
+//app routes
+app.use("/pinecone", pineconeRoutes)
+
+const PORT = env.port || 5000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
