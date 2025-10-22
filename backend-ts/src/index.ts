@@ -1,12 +1,13 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { env, firestore, pineconeIndex } from "./config";
 
 const app = express();
 
 const allowedOrigins = [
     "http://localhost:3000",
-]
+];
 
 app.use(
     cors({
