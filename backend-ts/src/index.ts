@@ -33,13 +33,13 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+//app routes
+app.use("/pinecone", pineconeRoutes)
+
 //test endpoint
 app.use("/", (req: Request, res: Response) => {
 	res.send("Server is running")
 })
-
-//app routes
-app.use("/pinecone", pineconeRoutes)
 
 const PORT = env.port || 5000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
