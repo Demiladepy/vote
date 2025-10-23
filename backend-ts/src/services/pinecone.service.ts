@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { createEmbedding, upsertToPinecone } from "./pineconeHelpers";
-import { projectRoot } from "../config/constants";
+//TODO 
+//import { createEmbedding, upsertToPinecone } from "./pineconeHelpers";
+//import { projectRoot } from "../config/constants";
 
 export const ingestFileService = async (file: string) => {
   const filePath = path.join(projectRoot, `backend/src/data/${file}`);
