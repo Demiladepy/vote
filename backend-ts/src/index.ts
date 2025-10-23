@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import { env, firestore, pineconeIndex } from "./config";
 
 //route imports
-import pineconeRoutes from "./routes/pineconeRoutes";
+import pineconeRoutes from "./routes/pinecone.route";
 
 const app = express();
 
@@ -37,7 +37,7 @@ app.use(cookieParser());
 app.use("/pinecone", pineconeRoutes)
 
 //test endpoint
-app.use("/", (req: Request, res: Response) => {
+app.use("/*", (req: Request, res: Response) => {
 	res.send("Server is running")
 })
 
