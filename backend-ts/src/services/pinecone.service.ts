@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createEmbedding, upsertToPinecone } from "./pinecone.helpers";
+import { createEmbedding, upsertToPinecone } from "../helpers/pinecone.helper";
 
 export const processPineconeData = async (fileUrl: string): Promise<number> => {
   const { data } = await axios.get(fileUrl);

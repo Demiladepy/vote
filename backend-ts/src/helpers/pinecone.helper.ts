@@ -1,0 +1,17 @@
+import { pineconeIndex } from "../config";
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
+export const createEmbedding = async (text: string): Promise<number[]> => {
+  const response = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: text,
+  });
+
+  return response.data[0].embedding;
+};
+
+export const upsertToPinecone = async (vectors: any[]) => {
+  await pineconeIndex.upsert(vectors);
+};
