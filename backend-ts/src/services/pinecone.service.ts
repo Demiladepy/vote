@@ -1,18 +1,8 @@
-import fs from "fs";
-import path from "path";
-//TODO 
-//import { createEmbedding, upsertToPinecone } from "./pineconeHelpers";
-//import { projectRoot } from "../config/constants";
+import axios from "axios";
+import { createEmbedding, upsertToPinecone } from "./pinecone.helpers";
 
-export const ingestFileService = async (file: string) => {
-  const filePath = path.join(projectRoot, `backend/src/data/${file}`);
-  console.log("[INGEST] Looking for file at:", filePath);
-
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found in /data. Tried: ${filePath}`);
-  }
-
-  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+export const processPineconeData = async (fileUrl: string): Promise<number> => {
+  const { data } = await axios.get(fileUrl);
   let processedCount = 0;
 
   for (const item of data) {
@@ -30,5 +20,5 @@ export const ingestFileService = async (file: string) => {
     processedCount++;
   }
 
-  return { processedCount };
+  return processedCount;
 };

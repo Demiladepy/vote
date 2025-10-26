@@ -1,21 +1,23 @@
 import { Request, Response } from "express";
-import { ingestFileService } from "../services/pinecone.service";
+import { uploadToCloudinary } from "../services/cloudinary.service";
+import { processPineconeData } from "../services/pinecone.service";
 
-export const ingestFileController = async (req: Request, res: Response) => {
+export const ingestFile = async (req: Request, res: Response) => {
   try {
-    const { file } = req.body;
-    if (!file) {
-      return res.status(400).json({ error: "No file specified" });
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const result = await ingestFileService(file);
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    const fileUrl = result.secure_url;
 
-    return res.json({
-      message: "Ingestion complete!",
-      processed: result.processedCount,
-    });
+    // Now process Pinecone ingestion from Cloudinary URL
+    const processedCount = await processPineconeData(fileUrl);
+
+    res.json({ message: "Ingestion complete!", processed: processedCount, source: fileUrl });
   } catch (error: any) {
-    console.error("[Controller Error]", error);
-    return res.status(500).json({ error: error.message });
+    console.error("[INGEST ERROR]", error);
+    res.status(500).json({ error: error.message });
   }
 };
