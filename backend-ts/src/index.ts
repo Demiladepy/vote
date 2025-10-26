@@ -37,7 +37,7 @@ app.use(cookieParser());
 app.use("/pinecone", pineconeRoutes)
 
 //test endpoint
-app.use("/*", (req: Request, res: Response) => {
+app.use("/", (req: Request, res: Response) => {
 	res.send("Server is running")
 })
 
