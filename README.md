@@ -77,6 +77,13 @@ POST /api/report
   "incidents": "None"
 }
 
+# Video Demo: 
+(https://youtu.be/dZhtI4xdAN8?si=JXjIWBRPcdrHSTgt(Explanation and introduction of the team and also showing the mcp flow logic)
+
+# Pitchdecks:
+(https://drive.google.com/file/d/1VgiKU168tR2CJrSQA46iv-ZLymO0D4fs/view?usp=drivesdk)
+(https://drive.google.com/file/d/1H33YS550ipI3jVlh3GWOgH8soQ6zhoBq/view?usp=drivesdk)
+
 ## 🤝 Contributing
 
 Pull requests are welcome!
