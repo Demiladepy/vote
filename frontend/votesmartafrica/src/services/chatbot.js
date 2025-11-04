@@ -1,20 +1,46 @@
-// Service to call backend search API for chatbot
-export async function fetchChatbotResponse(prompt) {
-  try {
-    const res = await fetch("/api/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: prompt, topK: 1 })
-    });
-    if (!res.ok) throw new Error("API error: " + res.status);
-    const data = await res.json();
-    // Compose a response from the top hit, fallback if none
-    if (data.hits && data.hits.length > 0) {
-      const doc = data.hits[0].doc;
-      return doc?.text || "No answer found, but the API responded.";
-    }
-    return "No relevant answer found.";
-  } catch (e) {
-    return `Error: ${e.message}`;
-  }
+import {GoogleGenAI, GenerateContentResponse} from '@google/genai';
+import { retryRequest } from "@/lib/utils";
+
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if(!GEMINI_API_KEY){
+	throw new Error("Must Provide API Key")
+}
+
+const genAI = new GoogleGenAI({apiKey: GEMINI_API_KEY});
+
+const GEMINI_MODEL = "gemini-2.0-flash";
+
+const systemInstruction = `
+	
+`
+
+export async function fetchChatbotResponse(message, chatHistory) {
+	const generationConfig = {
+		temperature: 1,
+		topP: 0.95,
+		topK: 64,
+		maxOutputTokens: 2048,
+		responseMimeType: "text/plain",
+		//systemInstruction: [systemPrompt(analysis)]
+	};
+	
+	const formattedHistory = chatHistory.map((message) => (
+		{
+			role: message.role,
+			parts: [{ text: message.content }]
+		}
+	))
+	
+	//initialize chat and get response
+	const chat = genAI.chats.create({
+		model: GEMINI_MODEL,
+		history: formattedHistory,
+		config: generationConfig,
+	})
+
+	const response = await chat.sendMessage({ message: message })// await retryRequest<GenerateContentResponse>(()=>chat.sendMessage({ message: message }))
+	const reply = response.text
+
+	return reply
 }

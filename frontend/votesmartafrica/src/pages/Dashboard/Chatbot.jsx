@@ -42,12 +42,12 @@ const Chatbot = () => {
     setInputMessage("");
     setIsTyping(true);
 
-    const reply = await fetchChatbotResponse(newMessage.content);
+    const reply = await fetchChatbotResponse(newMessage.content, messages);
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now() + 1,
-        role: "assistant",
+        role: "model",
         content: reply,
       },
     ]);
