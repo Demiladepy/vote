@@ -14,6 +14,7 @@ const allowedOrigins = [
 
 app.use(
     cors({
+		/*
         origin: function (origin, callback: Function) {
             // bypass the requests with no origin (like curl requests, mobile apps, etc )
             if (!origin) return callback(null, true);
@@ -24,7 +25,8 @@ app.use(
             }
             return callback(null, true);
           },
-      // origin: "http://localhost:3000",
+		  */
+      origin: "*",
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"],
