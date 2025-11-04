@@ -1,43 +1,69 @@
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import ReactMarkdown from "react-markdown";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Search } from "lucide-react";
+import { generateSummary } from "@/services/chatbot.js";
 
-const Candidates = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [candidates, setCandidates] = useState([]);
+export default function CandidateSearch() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 🧠 Fetch context from backend
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!query.trim()) return;
+
     setLoading(true);
     setError("");
-    setCandidates([]);
+    setResults([]);
+    setSummary("");
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/pinecone/context`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: searchQuery }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query })
       });
-
       const data = await res.json();
+      console.log(data);
 
-      if (!res.ok) throw new Error(data.error || "Search failed");
+      if (!data?.data?.length) {
+        setError("No related candidates found.");
+        setLoading(false);
+        return;
+      }
 
-      // Extract candidate metadata from backend response
-      setCandidates(data.data || []);
+      const filteredResults = data.data
+		  .filter(item => item.score > 0.5)
+		  .map(item => item.metadata);
+
+		if (!filteredResults.length) {
+		  setError("No strong matches found for your query.");
+		  setLoading(false);
+		  return;
+		}
+
+		setResults(filteredResults);
+
+      // 🧠 Optionally generate a Gemini summary
+      const combinedText = data.data
+        .map(
+          (d) =>
+            `${d.metadata.name} (${d.metadata.party}): ${d.metadata.manifesto || d.metadata.summary}`
+        )
+        .join("\n");
+
+      const aiSummary = await generateSummary(query, combinedText);
+      setSummary(aiSummary);
     } catch (err) {
-      setError(err.message || "Failed to fetch candidates");
+      console.error(err);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,9 +73,9 @@ const Candidates = () => {
     const colors = {
       "All Progressives Congress (APC)": "bg-green-700",
       "People's Democratic Party (PDP)": "bg-blue-700",
-      "Labour Party (LP)": "bg-red-600"
+      "Labour Party (LP)": "bg-red-600",
     };
-    return colors[party] || "bg-gray-500"
+    return colors[party] || "bg-gray-500";
   };
 
   return (
@@ -57,95 +83,74 @@ const Candidates = () => {
       <div>
         <h1 className="text-4xl font-bold text-foreground mb-2">Candidate Search</h1>
         <p className="text-muted-foreground">
-          Query the AI-powered database for candidate profiles and manifestos
+          Ask about a candidate’s manifesto or compare policies across parties.
         </p>
       </div>
 
       {/* Search Bar */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Ask about a candidate, e.g. 'What is Peter Obi’s manifesto?'"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="pl-10 h-12 rounded-lg text-base"
-              />
-            </div>
-            <div>
-              <Button
-                onClick={handleSearch}
-                className="h-12 px-6 text-base rounded-lg"
-                disabled={loading}
-              >
-                {loading ? "Searching..." : "Search"}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Ask about a candidate or policy..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-10 h-12 rounded-lg text-base"
+          />
+        </div>
+        <Button onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Search"}
+        </Button>
+      </div>
 
-      {/* Candidate List */}
+      {/* Error or Loading */}
+      {error && <div className="text-red-500">{error}</div>}
+      {loading && <div className="text-center py-6 text-muted-foreground">Loading results...</div>}
+
+      {/* 🧠 AI Summary (with Markdown rendering) */}
+      {summary && (
+        <Card className="border-green-300">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">AI Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-sm dark:prose-invert max-w-none">
+            <ReactMarkdown>{summary}</ReactMarkdown>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Candidate Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {!loading && candidates.length === 0 && !error && (
-          <div className="col-span-full text-center text-muted-foreground py-12">
-            Try searching for a candidate to get started.
-          </div>
-        )}
-
-        {loading && (
-          <div className="col-span-full text-center py-12">Fetching results...</div>
-        )}
-
-        {error && (
-          <div className="col-span-full text-center text-red-500 py-12">{error}</div>
-        )}
-
-        {candidates.map((result) => {
-          const candidate = result.metadata;
-          return (
-            <Card key={result.id} className="hover:shadow-lg transition">
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <Avatar className="w-14 h-14">
-                  <AvatarFallback>{candidate.name?.[0]}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-lg font-semibold">
-                    {candidate.name}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-2">
-                    <span
-                      className={`inline-block w-2 h-2 rounded-full ${getPartyColor(
-                        candidate.party
-                      )}`}
-                    ></span>
-                    {candidate.party}
-                  </CardDescription>
+        {results.map((candidate) => (
+          <Card key={candidate.id} className="hover:shadow-lg transition">
+            <CardHeader className="flex flex-row items-center gap-4 pb-2">
+              <div>
+                <CardTitle className="text-lg font-semibold">{candidate.name}</CardTitle>
+                <CardDescription className="flex items-center gap-2">
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full ${getPartyColor(
+                      candidate.party
+                    )}`}
+                  ></span>
+                  {candidate.party}
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-2 text-sm text-muted-foreground">
+                {candidate.position} {candidate.year ? `(${candidate.year})` : ""}
+              </div>
+              {candidate.summary && <div className="mb-2 text-base">{candidate.summary}</div>}
+              {candidate.manifesto && (
+                <div className="mb-2 text-xs italic">
+                  Manifesto: {candidate.manifesto}
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-2 text-sm text-muted-foreground">
-                  {candidate.position} {candidate.year ? `(${candidate.year})` : ""}
-                </div>
-                {candidate.summary && (
-                  <div className="mb-2 text-base">{candidate.summary}</div>
-                )}
-                {candidate.manifesto && (
-                  <div className="mb-2 text-xs italic">
-                    Manifesto: {candidate.manifesto}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
-};
-
-export default Candidates;
+}
