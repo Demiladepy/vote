@@ -10,6 +10,7 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:3000",
+	"https://vote-vh8i.onrender.com"
 ];
 
 app.use(
