@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { env, firestore, pineconeIndex } from "./config";
+import { env } from "./config";
 
 //route imports
 import pineconeRoutes from "./routes/pinecone.route";

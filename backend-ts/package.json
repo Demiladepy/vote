@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.28.0",
     "@pinecone-database/pinecone": "^6.1.2",
     "axios": "^1.12.2",
     "cloudinary": "^2.8.0",

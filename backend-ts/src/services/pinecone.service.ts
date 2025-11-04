@@ -1,17 +1,34 @@
 import axios from "axios";
 import { createEmbedding, upsertToPinecone } from "../helpers/pinecone.helper";
 
+function extractTextForEmbedding(item: Record<string, any>): string {
+  const preferredKeys = [
+    "name", "party", "position", "manifesto", "summary",
+    "topic", "description", "source", "year"
+  ];
+
+  return preferredKeys
+    .filter(key => key in item && typeof item[key] === "string")
+    .map(key => `${key}: ${item[key]}`)
+    .join(", ");
+}
+
 export const processPineconeData = async (fileUrl: string): Promise<number> => {
   const { data } = await axios.get(fileUrl);
   let processedCount = 0;
 
   for (const item of data) {
-    const text = `${item.name}, ${item.party}, ${item.position}, ${item.manifesto}`;
+    const text = extractTextForEmbedding(item);
+    if (!text.trim()) continue; 
+	console.log(text)
+	
     const embedding = await createEmbedding(text);
+	
+	const id = item.id || item.name || item.topic || `record-${processedCount + 1}`;
 
     await upsertToPinecone([
       {
-        id: item.name,
+        id,
         values: embedding,
         metadata: item,
       },

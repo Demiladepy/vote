@@ -9,6 +9,7 @@ export const ingestFile = async (req: Request, res: Response) => {
     }
 
     // Upload to Cloudinary
+	console.log(req.file.originalname)
     const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
     const fileUrl = result.secure_url;
 
