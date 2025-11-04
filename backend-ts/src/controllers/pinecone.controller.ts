@@ -27,7 +27,11 @@ export const queryContext = async (req: Request, res: Response) => {
 	try{
 		const { query } = req.body;
 		
-		const results = queryPineconeIndex(query);
+		const results = await queryPineconeIndex(query);
+		if (!results){
+			res.status(500).json({ error: "error creating embeddings from query"})
+			return
+		}
 		
 		const data = results.matches?.map((match)=>({
 			id: match.id,

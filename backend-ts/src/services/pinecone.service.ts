@@ -46,6 +46,7 @@ export const queryPineconeIndex = async (query: string) => {
 	
 	const index = await getPineconeIndex();
 	
+	if(!embedding) return null
 	const searchResponse = await index.query({
       topK: 5,
       vector: embedding,
