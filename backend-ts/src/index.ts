@@ -9,8 +9,7 @@ import pineconeRoutes from "./routes/pinecone.route";
 const app = express();
 
 const allowedOrigins = [
-    "http://localhost:3000",
-	"https://vote-vh8i.onrender.com"
+    "*" //to be swapped later
 ];
 
 app.use(
