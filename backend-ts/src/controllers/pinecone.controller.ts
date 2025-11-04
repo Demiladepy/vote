@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { uploadToCloudinary } from "../services/cloudinary.service";
-import { processPineconeData } from "../services/pinecone.service";
+import { processPineconeData, queryPineconeIndex } from "../services/pinecone.service";
 
 export const ingestFile = async (req: Request, res: Response) => {
   try {
@@ -22,3 +22,22 @@ export const ingestFile = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const queryContext = async (req: Request, res: Response) => {
+	try{
+		const { query } = req.body;
+		
+		const results = queryPineconeIndex(query);
+		
+		const data = results.matches?.map((match)=>({
+			id: match.id,
+			score: match.score,
+			metadata: match.metadata,
+		}))
+		
+		res.json({ query, data })
+	} catch(error: any){
+		console.error("[MCP Query Error]", error);
+		return res.status(500).json({ error: error?.message });	
+	}
+}

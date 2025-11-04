@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createEmbedding, upsertToPinecone } from "../helpers/pinecone.helper";
+import { getPineconeIndex } from "../config";
 
 function extractTextForEmbedding(item: Record<string, any>): string {
   const preferredKeys = [
@@ -39,3 +40,17 @@ export const processPineconeData = async (fileUrl: string): Promise<number> => {
 
   return processedCount;
 };
+
+export const queryPineconeIndex = async (query: string) => {
+	const embedding = await createEmbedding(query);
+	
+	const index = await getPineconeIndex();
+	
+	const searchResponse = await index.query({
+      topK: 5,
+      vector: embedding,
+      includeMetadata: true,
+    });
+	
+	return searchResponse
+}
