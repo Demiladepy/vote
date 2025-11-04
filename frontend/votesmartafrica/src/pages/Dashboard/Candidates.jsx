@@ -121,36 +121,42 @@ export default function CandidateSearch() {
       )}
 
       {/* Candidate Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {results.map((candidate) => (
-          <Card key={candidate.id} className="hover:shadow-lg transition">
-            <CardHeader className="flex flex-row items-center gap-4 pb-2">
-              <div>
-                <CardTitle className="text-lg font-semibold">{candidate.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  <span
-                    className={`inline-block w-2 h-2 rounded-full ${getPartyColor(
-                      candidate.party
-                    )}`}
-                  ></span>
-                  {candidate.party}
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-2 text-sm text-muted-foreground">
-                {candidate.position} {candidate.year ? `(${candidate.year})` : ""}
-              </div>
-              {candidate.summary && <div className="mb-2 text-base">{candidate.summary}</div>}
-              {candidate.manifesto && (
-                <div className="mb-2 text-xs italic">
-                  Manifesto: {candidate.manifesto}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+	  {results.length > 0 && (
+	  <div className="space-y-4">
+	  <h2 className="text-2xl font-semibold text-foreground">Top Picks</h2>
+		  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			{results.map((candidate) => (
+			  <Card key={candidate.id} className="hover:shadow-lg transition">
+				<CardHeader className="flex flex-row items-center gap-4 pb-2">
+				  <div>
+					<CardTitle className="text-lg font-semibold">{candidate.name}</CardTitle>
+					<CardDescription className="flex items-center gap-2">
+					  <span
+						className={`inline-block w-2 h-2 rounded-full ${getPartyColor(
+						  candidate.party
+						)}`}
+					  ></span>
+					  {candidate.party}
+					</CardDescription>
+				  </div>
+				</CardHeader>
+				<CardContent>
+				  <div className="mb-2 text-sm text-muted-foreground">
+					{candidate.position} {candidate.year ? `(${candidate.year})` : ""}
+				  </div>
+				  {candidate.summary && <div className="mb-2 text-base">{candidate.summary}</div>}
+				  {candidate.manifesto && (
+					<div className="mb-2 text-xs italic">
+					  Manifesto: {candidate.manifesto}
+					</div>
+				  )}
+				</CardContent>
+			  </Card>
+			))}
+		  </div>
+		</div>
+			  )}
     </div>
+
   );
 }
